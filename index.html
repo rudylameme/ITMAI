@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marché BVP France - Présentation Groupement des Mousquetaires</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Raleway:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Raleway', sans-serif;
+            background-color: #FDF8F3;
+            color: #5D4037;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+        
+        .main-container {
+            position: relative;
+            width: 100%;
+            max-width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .slide-container {
+            width: 1280px;
+            height: 720px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+            border-radius: 5px;
+            transition: transform 0.6s ease, opacity 0.6s ease;
+        }
+        
+        .slide {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            z-index: 1;
+            transition: opacity 0.8s ease;
+            overflow-y: auto;
+            background-color: #FDF8F3;
+        }
+        
+        .slide.active {
+            opacity: 1;
+            z-index: 5;
+        }
+        
+        h1, h2, h3 {
+            font-family: 'Playfair Display', serif;
+        }
+        
+        .bread-icon {
+            position: absolute;
+            opacity: 0.1;
+            z-index: 0;
+        }
+        
+        .bottom-decoration {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 10px;
+            width: 100%;
+            background-color: #C8A27A;
+            z-index: 10;
+        }
+        
+        .cover-background {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 30%;
+            background: linear-gradient(transparent, #E6CCB2);
+            z-index: 0;
+        }
+        
+        .navigation {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 10px 15px;
+            border-radius: 50px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .nav-button {
+            background-color: #B35F41;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-button:hover {
+            background-color: #5D4037;
+            transform: scale(1.1);
+        }
+        
+        .slide-indicator {
+            background-color: #E6CCB2;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 20px;
+            padding: 0 15px;
+            font-weight: 600;
+            color: #5D4037;
+        }
+        
+        .fullscreen-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: rgba(179, 95, 65, 0.7);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 100;
+            transition: all 0.3s ease;
+        }
+        
+        .fullscreen-button:hover {
+            background-color: rgba(93, 64, 55, 0.9);
+        }
+        
+        /* Additional styles for all slides */
+        .agenda-item {
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 5;
+        }
+        
+        .agenda-item:hover {
+            transform: translateX(10px);
+        }
+        
+        .data-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+        
+        .data-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 240px;
+            width: 100%;
+        }
+        
+        .recommendation-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+        }
+        
+        .recommendation-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+            border-left-color: #B35F41;
+        }
+        
+        /* Logo du Groupement des Mousquetaires */
+        .groupement-logo {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 100;
+            width: 120px;
+            height: auto;
+            opacity: 0.9;
+        }
+        
+        /* Style des diapositives actives entrant et sortant */
+        .slide.active.slide-in-right {
+            animation: slideInRight 0.8s forwards;
+        }
+        
+        .slide.active.slide-out-left {
+            animation: slideOutLeft 0.8s forwards;
+        }
+        
+        .slide.active.slide-in-left {
+            animation: slideInLeft 0.8s forwards;
+        }
+        
+        .slide.active.slide-out-right {
+            animation: slideOutRight 0.8s forwards;
+        }
+        
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes slideOutLeft {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(-100%); opacity: 0; }
+        }
+        
+        @keyframes slideInLeft {
+            from { transform: translateX(-100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes slideOutRight {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- Logo du Groupement des Mousquetaires -->
+        <div class="groupement-logo">
+            <img src="https://assets-big.cdn-mousquetaires.com/medias/domain12283/media101773/531943-osun2nmgct.jpg" alt="Logo Groupement des Mousquetaires">
+        </div>
+        
+        <!-- Navigation -->
+        <div class="navigation">
+            <button class="nav-button" id="prevButton">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            
+            <div class="slide-indicator">
+                <span id="currentSlide">1</span> / <span id="totalSlides">15</span>
+            </div>
+            
+            <button class="nav-button" id="nextButton">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+        
+        <!-- Fullscreen button -->
+        <button class="fullscreen-button" id="fullscreenButton">
+            <i class="fas fa-expand"></i>
+        </button>
+        
+        <!-- Slide container -->
+        <div class="slide-container">
+            <!-- Slide 1: Title -->
+            <div class="slide active" id="slide1">
+                <!-- Background elements -->
+                <div class="cover-background"></div>
+                <div class="bread-icon" style="top: 10%; left: 10%; font-size: 80px;">
+                    <i class="fas fa-bread-slice"></i>
+                </div>
+                <div class="bread-icon" style="bottom: 15%; right: 12%; font-size: 100px;">
+                    <i class="fas fa-croissant"></i>
+                </div>
+                <div class="bread-icon" style="top: 20%; right: 20%; font-size: 70px;">
+                    <i class="fas fa-cookie"></i>
+                </div>
+                <div class="bread-icon" style="bottom: 30%; left: 15%; font-size: 90px;">
+                    <i class="fas fa-birthday-cake"></i>
+                </div>
+                
+                <!-- Main content -->
+                <div class="z-10 text-center p-10 bg-white bg-opacity-80 rounded-lg shadow-xl mx-20 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" style="width: 80%;">
+                    <h1 class="text-5xl font-bold mb-6 text-amber-800">État des lieux et stratégies pour le marché de la boulangerie, viennoiserie et pâtisserie en France</h1>
+                    
+                    <div class="flex justify-center items-center my-8">
+                        <div class="h-1 w-32 bg-amber-600 rounded-full mx-2"></div>
+                        <i class="fas fa-bread-slice text-3xl text-amber-600 mx-4"></i>
+                        <i class="fas fa-croissant text-3xl text-amber-600 mx-4"></i>
+                        <i class="fas fa-cookie text-3xl text-amber-600 mx-4"></i>
+                        <div class="h-1 w-32 bg-amber-600 rounded-full mx-2"></div>
+                    </div>
+                    
+                    <h2 class="text-2xl font-semibold mb-8 text-amber-700">Analyse du marché et recommandations stratégiques</h2>
+                    
+                    <p class="text-lg mb-2">Rapport préparé pour le Groupement des Mousquetaires</p>
+                    <p class="text-md text-gray-600">2025</p>
+                </div>
+                
+                <div class="bottom-decoration"></div>
+            </div>
+
+            <!-- Slide 2: Sommaire -->
+            <div class="slide" id="slide2">
+                <!-- Background elements -->
+                <div class="bread-icon" style="top: 5%; right: 5%; font-size: 120px;">
+                    <i class="fas fa-bread-slice"></i>
+                </div>
+                <div class="bread-icon" style="bottom: 10%; left: 8%; font-size: 100px;">
+                    <i class="fas fa-croissant"></i>
+                </div>
+                
+                <!-- Main content -->
+                <div class="z-10 p-12">
+                    <h1 class="text-4xl font-bold mb-8 text-amber-800">Sommaire</h1>
+                    
+                    <div class="grid grid-cols-1 gap-6 mt-8">
+                        <div class="agenda-item p-4 bg-white bg-opacity-70 rounded-lg shadow-sm flex items-center">
+                            <div class="w-12 h-12 rounded-full bg-amber-100 flex justify-center items-center mr-6 agenda-icon">
+                                <i class="fas fa-chart-pie text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-semibold">1. État actuel du marché de la BVP en France</h3>
+                                <p class="text-gray-600 mt-1">Taille, croissance et segmentation du marché</p>
+                            </div>
+                        </div>
+                        
+                        <div class="agenda-item p-4 bg-white bg-opacity-70 rounded-lg shadow-sm flex items-center">
+                            <div class="w-12 h-12 rounded-full bg-amber-100 flex justify-center items-center mr-6 agenda-icon">
+                                <i class="fas fa-users text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-semibold">2. Tendances et préférences des consommateurs</h3>
+                                <p class="text-gray-600 mt-1">Habitudes d'achat et attributs de produits recherchés</p>
+                            </div>
+                        </div>
+                        
+                        <div class="agenda-item p-4 bg-white bg-opacity-70 rounded-lg shadow-sm flex items-center">
+                            <div class="w-12 h-12 rounded-full bg-amber-100 flex justify-center items-center mr-6 agenda-icon">
+                                <i class="fas fa-store text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-semibold">3. Le marché artisanal de la BVP en France</h3>
+                                <p class="text-gray-600 mt-1">Caractéristiques, défis et fidélisation des consommateurs</p>
+                            </div>
+                        </div>
+                        
+                        <div class="agenda-item p-4 bg-white bg-opacity-70 rounded-lg shadow-sm flex items-center">
+                            <div class="w-12 h-12 rounded-full bg-amber-100 flex justify-center items-center mr-6 agenda-icon">
+                                <i class="fas fa-globe-europe text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-semibold">4. Tendances et solutions du marché international</h3>
+                                <p class="text-gray-600 mt-1">Analyse comparative des marchés clés et stratégies applicables</p>
+                            </div>
+                        </div>
+                        
+                        <div class="agenda-item p-4 bg-white bg-opacity-70 rounded-lg shadow-sm flex items-center">
+                            <div class="w-12 h-12 rounded-full bg-amber-100 flex justify-center items-center mr-6 agenda-icon">
+                                <i class="fas fa-chess text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-semibold">5. Paysage concurrentiel</h3>
+                                <p class="text-gray-600 mt-1">Acteurs principaux et analyse de leurs stratégies</p>
+                            </div>
+                        </div>
+                        
+                        <div class="agenda-item p-4 bg-white bg-opacity-70 rounded-lg shadow-sm flex items-center">
+                            <div class="w-12 h-12 rounded-full bg-amber-100 flex justify-center items-center mr-6 agenda-icon">
+                                <i class="fas fa-bullseye text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-semibold">6. Priorités stratégiques et recommandations</h3>
+                                <p class="text-gray-600 mt-1">Actions concrètes pour regagner des parts de marché</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bottom-decoration"></div>
+            </div>
+
+            <!-- Slide 3: État actuel du marché -->
+            <div class="slide" id="slide3">
+                <!-- Background elements -->
+                <div class="bread-icon" style="top: 10%; right: 5%; font-size: 120px;">
+                    <i class="fas fa-bread-slice"></i>
+                </div>
+                
+                <!-- Header -->
+                <div class="z-10 px-12 pt-10">
+                    <h1 class="text-3xl font-bold mb-4 text-amber-800">1. État actuel du marché de la BVP en France</h1>
+                    <div class="h-1 w-32 bg-amber-600 rounded-full mb-8"></div>
+                </div>
+                
+                <!-- Main content -->
+                <div class="z-10 px-12 pb-12 grid grid-cols-2 gap-8">
+                    <!-- Left column - Revenue & Growth -->
+                    <div class="space-y-6">
+                        <div class="data-card p-5">
+                            <h3 class="text-xl font-semibold mb-4 text-amber-700">Taille et croissance du marché</h3>
+                            <div class="chart-container">
+                                <canvas id="revenueChart"></canvas>
+                            </div>
+                            <div class="mt-3 text-sm text-gray-600 italic">
+                                * Projection pour 2024 basée sur une croissance de 2%
+                            </div>
+                        </div>
+                        
+                        <div class="data-card p-5">
+                            <h3 class="text-xl font-semibold mb-4 text-amber-700">Chiffres clés</h3>
+                            <ul class="space-y-3">
+                                <li class="flex items-center">
+                                    <i class="fas fa-store text-amber-600 mr-3"></i>
+                                    <span><strong>32 600</strong> points de vente dont <strong>30 100</strong> entreprises indépendantes</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fas fa-euro-sign text-amber-600 mr-3"></i>
+                                    <span>Chiffre d'affaires moyen par établissement : <strong>~501 661 €</strong> (2023)</span>
+                                </li>
+                                <li class="flex items-center">
+                                    <i class="fas fa-chart-line text-amber-600 mr-3"></i>
+                                    <span>Croissance annuelle prévue en 2024 : <strong>+2%</strong></span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <!-- Right column - Segmentation & Table -->
+                    <div class="space-y-6">
+                        <div class="data-card p-5">
+                            <h3 class="text-xl font-semibold mb-4 text-amber-700">Segmentation du marché</h3>
+                            <div class="chart-container">
+                                <canvas id="segmentationChart"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="data-card p-5">
+                            <h3 class="text-xl font-semibold mb-4 text-amber-700">Évolution du marché (2020-2023)</h3>
+                            <table class="w-full">
+                                <thead>
+                                    <tr>
+                                        <th class="text-left p-2 bg-amber-100">Année</th>
+                                        <th class="text-left p-2 bg-amber-100">Entreprises Artisanales</th>
+                                        <th class="text-left p-2 bg-amber-100">CA total (Artisanal)</th>
+                                        <th class="text-left p-2 bg-amber-100">CA moyen / établissement</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="p-2 border-b border-amber-100">2020</td>
+                                        <td class="p-2 border-b border-amber-100">32 341</td>
+                                        <td class="p-2 border-b border-amber-100">12,96 Mds €</td>
+                                        <td class="p-2 border-b border-amber-100">~400 000 €</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-2 border-b border-amber-100">2023</td>
+                                        <td class="p-2 border-b border-amber-100">30 100</td>
+                                        <td class="p-2 border-b border-amber-100">15,1 Mds €</td>
+                                        <td class="p-2 border-b border-amber-100">~501 661 €</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-2">2024*</td>
+                                        <td class="p-2">N/A</td>
+                                        <td class="p-2">~15,4 Mds €</td>
+                                        <td class="p-2">N/A</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div class="mt-3 text-sm text-gray-600 italic">
+                                * Projection basée sur une croissance de 2%
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bottom-decoration"></div>
+            </div>
+
+            <!-- Slide 4: Tendances et préférences des consommateurs -->
+            <div class="slide" id="slide4">
+                <!-- Background elements -->
+                <div class="bread-icon" style="top: 15%; left: 8%; font-size: 100px;">
+                    <i class="fas fa-croissant"></i>
+                </div>
+                <div class="bread-icon" style="bottom: 20%; right: 5%; font-size: 120px;">
+                    <i class="fas fa-cookie"></i>
+                </div>
+                
+                <!-- Header -->
+                <div class="z-10 px-12 pt-10">
+                    <h1 class="text-3xl font-bold mb-4 text-amber-800">2. Tendances et préférences des consommateurs</h1>
+                    <div class="h-1 w-32 bg-amber-600 rounded-full mb-8"></div>
+                </div>
+                
+                <!-- Main content -->
+                <div class="z-10 px-12 pb-12 grid grid-cols-2 gap-8">
+                    <!-- Left column - Consumption habits -->
+                    <div class="space-y-6">
+                        <div class="data-card p-5">
+                            <h3 class="text-xl font-semibold mb-4 text-amber-700">Habitudes de consommation</h3>
+                            
+                            <div class="chart-container mb-4">
+                                <canvas id="visitFrequencyChart"></canvas>
+                            </div>
+                            
+                            <div class="space-y-3 mt-4">
+                                <div class="p-3 pl-4 border-l-4 border-amber-500">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-bread-slice text-amber-600 mr-3 text-xl"></i>
+                                        <div>
+                                            <p class="font-semibold">+12 millions</p>
+                                            <p class="text-sm text-gray-600">de Français achètent une baguette quotidiennement</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="p-3 pl-4 border-l-4 border-amber-500">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-shopping-basket text-amber-600 mr-3 text-xl"></i>
+                                        <div>
+                                            <p class="font-semibold">5,38 €</p>
+                                            <p class="text-sm text-gray-600">Panier moyen en boulangerie en 2023 (en hausse)</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="data-card p-5">
+                            <h3 class="text-xl font-semibold mb-4 text-amber-700">Le snacking en plein essor</h3>
+                            
+                            <div class="mb-4">
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="font-medium">Part du snacking</span>
+                                    <span class="font-bold text-amber-700">20%</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                    <div class="bg-amber-600 h-2.5 rounded-full" style="width: 20%"></div>
+                                </div>
+                                <p class="text-sm text-gray-600 mt-1">du chiffre d'affaires des boulangeries</p>
+                            </div>
+                            
+                            <div class="grid grid-cols-2 gap-4 mt-5">
+                                <div class="bg-amber-50 p-4 rounded-lg text-center">
+                                    <div class="text-3xl font-bold text-amber-700 mb-2">82%</div>
+                                    <div class="text-sm">des Français déjeunent en boulangerie</div>
+                                </div>
+                                <div class="bg-amber-50 p-4 rounded-lg text-center">
+                                    <div class="text-3xl font-bold text-amber-700 mb-2">12%</div>
+                                    <div class="text-sm">y dînent également</div>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-4 text-sm text-gray-600">
+                                <i class="fas fa-chart-line mr-2 text-amber-600"></i>
+                                Croissance prévue: <strong>+15%</strong> entre 2022 et 2026
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Right column - Product attributes -->
+                    <div class="space-y-6">
+                        <div class="data-card p-5">
+                            <h3 class="text-xl font-semibold mb-4 text-amber-700">Attributs de produits recherchés</h3>
+                            
+                            <div class="chart-container">
+                                <canvas id="preferencesChart"></canvas>
+                            </div>
+                            
+                            <div class="mt-6">
+                                <h4 class="font-semibold mb-2">Top 3 des pâtisseries préférées</h4>
+                                <div class="grid grid-cols-3 gap-3">
+                                    <div class="bg-amber-50 p-3 rounded-lg text-center">
+                                        <i class="fas fa-chart-pie text-amber-600 mb-1"></i>
+                                        <div class="text-xl font-semibold text-amber-800">40%</div>
+                                        <div class="text-xs">Tarte aux fruits</div>
+                                    </div>
+                                    <div class="bg-amber-50 p-3 rounded-lg text-center">
+                                        <i class="fas fa-candy-cane text-amber-600 mb-1"></i>
+                                        <div class="text-xl font-semibold text-amber-800">29%</div>
+                                        <div class="text-xs">Éclair/Religieuse</div>
+                                    </div>
+                                    <div class="bg-amber-50 p-3 rounded-lg text-center">
+                                        <i class="fas fa-crown text-amber-600 mb-1"></i>
+                                        <div class="text-xl font-semibold text-amber-800">27%</div>
+                                        <div class="text-xs">Galette des rois</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="data-card p-5">
+                            <h3 class="text-xl font-semibold mb-4 text-amber-700">Tendances clés des consommateurs</h3>
+                            
+                            <ul class="space-y-3">
+                                <li class="flex items-start">
+                                    <i class="fas fa-seedling text-amber-600 mr-3 mt-1"></i>
+                                    <div>
+                                        <p class="font-semibold">Intérêt croissant pour les pains spéciaux</p>
+                                        <p class="text-sm text-gray-600">Pain complet, de seigle, aux céréales</p>
+                                    </div>
+                                </li>
+                                
+                                <li class="flex items-start">
+                                    <i class="fas fa-heart text-amber-600 mr-3 mt-1"></i>
+                                    <div>
+                                        <p class="font-semibold">Préoccupation santé et bien-être</p>
+                                        <p class="
